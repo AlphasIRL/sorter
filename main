@@ -1,0 +1,312 @@
+import sys
+from collections import Counter
+
+
+def check_args():
+    known_args = ["-sortingType", "-dataType", "long", "line", "word", "byCount", "natural", "-inputFile",
+                  "-outputFile"]
+    if "-inputFile" in sys.argv:
+        index_1 = sys.argv.index("-inputFile")
+        file_name_1 = sys.argv[index_1 + 1]
+        known_args.append(file_name_1)
+    if "-outputFile" in sys.argv:
+        index_2 = sys.argv.index("-outputFile")
+        file_name_2 = sys.argv[index_2 + 1]
+        known_args.append(file_name_2)
+
+    for arg in sys.argv[1:]:
+        if arg not in known_args:
+            print(f'"{arg}" is not a valid parameter. It will be skipped.')
+    return sys.argv
+
+
+def get_sorting_type(args):
+    if "-sortingType" in args:
+        if not ("natural" in args or "byCount" in args):
+            print("No sorting type defined!")
+            exit()
+
+    if "byCount" in args:
+        return "count"
+    else:
+        return "natural"
+
+
+def get_files(args):
+    input_file = None
+    output_file = None
+    if "-inputFile" in args:
+        try:
+            index = args.index("-inputFile")
+            input_file = args[index + 1]
+        except ValueError:
+            pass
+    if "-outputFile" in args:
+        try:
+            index = args.index("-outputFile")
+            output_file = args[index + 1]
+        except ValueError:
+            pass
+    return input_file, output_file
+
+
+def get_data_type(args):
+    if "-dataType" in args:
+        if not ("long" in args or "line" in args or "word" in args):
+            print("No data type defined!")
+            exit()
+    try:
+        index = args.index("-dataType")
+        return args[index + 1]
+    except ValueError:
+        return None
+
+
+def int_results():
+    int_list = []
+    while True:
+        try:
+            int_list += input(" ").split()
+        except EOFError:
+            break
+    int_list = list(map(int, int_list))
+    numbers_count = len(int_list)
+    biggest = max(int_list)
+    biggest_count = int_list.count(biggest)
+    biggest_percentage = biggest_count / numbers_count * 100
+    print(f"Total numbers: {numbers_count}")
+    print(f"The greatest number: {biggest} ({biggest_count} time(s), {int(biggest_percentage)}%)")
+
+
+def line_results():
+    line_list = []
+    while True:
+        try:
+            line_list.append(input(""))
+        except EOFError:
+            break
+
+    lines_count = len(line_list)
+    line_list.sort()
+    longest_line = max(line_list, key=len)
+    longest_line_count = line_list.count(longest_line)
+    longest_line_percentage = longest_line_count / lines_count * 100
+
+    print(f"Total lines: {lines_count}")
+    print("The longest line:")
+    print(longest_line)
+    print(f"({longest_line_count} time(s), {int(longest_line_percentage)}%)")
+
+
+def word_results():
+    word_list = []
+    while True:
+        try:
+            word_list += input(" ").split()
+        except EOFError:
+            break
+
+    word_count = len(word_list)
+    word_list.sort()
+    longest_word = max(word_list, key=len)
+    longest_word_count = word_list.count(longest_word)
+    longest_line_percentage = longest_word_count / word_count * 100
+
+    print(f"Total words: {word_count}")
+    print(f"The longest word: {longest_word} ({longest_word_count} time(s), {int(longest_line_percentage)}%)")
+
+
+def sort_longs_naturally(file_name_input, file_name_output):
+    long_list = []
+    if file_name_input:
+        with open(file_name_input, "r") as f:
+            for line in f:
+                temp = line.split()
+                for el in temp:
+                    try:
+                        int(el)
+                    except ValueError:
+                        print(f"{el} is not a long. It will be skipped.")
+                        temp.remove(el)
+                long_list += temp
+    else:
+        while True:
+            try:
+                temp = input(" ").split()
+                for el in temp:
+                    try:
+                        int(el)
+                    except ValueError:
+                        print(f"{el} is not a long. It will be skipped.")
+                        temp.remove(el)
+                long_list += temp
+            except EOFError:
+                break
+    numbers_count = len(long_list)
+    long_list = list(map(int, long_list))
+    long_list.sort()
+    long_list = list(map(str, long_list))
+    if file_name_output:
+        with open(file_name_output, "w") as f:
+            print(f"Total numbers: {numbers_count}.", file=f)
+            print(f"Sorted data: {' '.join(long_list)}", file=f)
+    else:
+        print(f"Total numbers: {numbers_count}.")
+        print(f"Sorted data: {' '.join(long_list)}")
+
+
+def sort_words_naturally(file_name_input, file_name_output):
+    word_list = []
+    if file_name_input:
+        with open(file_name_input, "r") as f:
+            for line in f:
+                word_list += line.split()
+    else:
+        while True:
+            try:
+                word_list += input(" ").split()
+            except EOFError:
+                break
+    words_count = len(word_list)
+    word_list.sort()
+    if file_name_output:
+        with open(file_name_output, "w") as f:
+            print(f"Total numbers: {words_count}.", file=f)
+            print(f"Sorted data: {' '.join(word_list)}", file=f)
+    else:
+        print(f"Total numbers: {words_count}.")
+        print(f"Sorted data: {' '.join(word_list)}")
+
+
+def sort_lines_naturally(file_name_input, file_name_output):
+    line_list = []
+    if file_name_input:
+        with open(file_name_input, "r") as f:
+            for line in f:
+                line_list.append(line)
+    else:
+        while True:
+            try:
+                line_list.append(input(""))
+            except EOFError:
+                break
+
+    lines_count = len(line_list)
+    line_list.sort()
+    if file_name_output:
+        with open(file_name_output, "w") as f:
+            print(f"Total lines: {lines_count}", file=f)
+            print("Sorted data:", file=f)
+            for line in line_list:
+                print(line)
+    else:
+        print(f"Total lines: {lines_count}")
+        print("Sorted data:")
+        for line in line_list:
+            print(line)
+
+
+def sort_by_count(data_type, file_name_input, file_name_output):
+    counter = Counter()
+    if data_type == "line":
+        line_list = []
+        if file_name_input:
+            with open(file_name_input, "r") as f:
+                for line in f:
+                    line_list.append(line)
+        else:
+            while True:
+                try:
+                    line_list.append(input(""))
+                except EOFError:
+                    break
+        counter.update(line_list)
+    elif data_type == "long":
+        if file_name_input:
+            with open(file_name_input, "r") as f:
+                for line in f:
+                    temp = line.split()
+                    for el in temp:
+                        try:
+                            int(el)
+                        except ValueError:
+                            print(f"{el} is not a long. It will be skipped.")
+                            temp.remove(el)
+                    counter.update(temp)
+        else:
+            while True:
+                try:
+                    temp = input(" ").split()
+                    for el in temp:
+                        try:
+                            int(el)
+                        except ValueError:
+                            print(f"{el} is not a long. It will be skipped.")
+                            temp.remove(el)
+                    counter.update(temp)
+                except EOFError:
+                    break
+    else:
+        if file_name_input:
+            with open(file_name_input, "r") as f:
+                for line in f:
+                    counter.update(line.split())
+        else:
+            while True:
+                try:
+                    counter.update(input(" ").split())
+                except EOFError:
+                    break
+    if data_type == "long":
+        types = "numbers"
+    elif data_type == "word":
+        types = "words"
+    else:
+        types = "lines"
+    if file_name_output:
+        with open(file_name_output, "w") as f:
+            print(f"Total {types}: {counter.total()}", file=f)
+            if data_type == "long":
+                sorted_counter = sorted(counter.items(), key=lambda x: int(x[0]))
+                sorted_counter = sorted(sorted_counter, key=lambda x: x[1])
+                for tuples in sorted_counter:
+                    print(f"{tuples[0]}: {tuples[1]} time(s), {int((tuples[1] / counter.total()) * 100)}%", file=f)
+            else:
+                sorted_counter = sorted(counter.items(), key=lambda x: x[0])
+                sorted_counter = sorted(sorted_counter, key=lambda x: x[1])
+                for tuples in sorted_counter:
+                    print(f"{tuples[0]}: {tuples[1]} time(s), {int((tuples[1] / counter.total()) * 100)}%", file=f)
+    else:
+        print(f"Total {types}: {counter.total()}")
+        if data_type == "long":
+            sorted_counter = sorted(counter.items(), key=lambda x: int(x[0]))
+            sorted_counter = sorted(sorted_counter, key=lambda x: x[1])
+            for tuples in sorted_counter:
+                print(f"{tuples[0]}: {tuples[1]} time(s), {int((tuples[1] / counter.total()) * 100)}%")
+        else:
+            sorted_counter = sorted(counter.items(), key=lambda x: x[0])
+            sorted_counter = sorted(sorted_counter, key=lambda x: x[1])
+            for tuples in sorted_counter:
+                print(f"{tuples[0]}: {tuples[1]} time(s), {int((tuples[1] / counter.total()) * 100)}%")
+
+
+def main():
+    valid_args = check_args()
+    sorting_type = get_sorting_type(valid_args)
+    data_type = get_data_type(valid_args)
+    input_file, output_file = get_files(valid_args)
+
+    if sorting_type == "natural":
+        if data_type == "long":
+            sort_longs_naturally(input_file, output_file)
+        elif data_type == "word":
+            sort_words_naturally(input_file, output_file)
+        elif data_type == "line":
+            sort_lines_naturally(input_file, output_file)
+
+    elif sorting_type == "count":
+        sort_by_count(data_type, input_file, output_file)
+
+
+if __name__ == "__main__":
+    main()
